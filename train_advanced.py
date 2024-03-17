@@ -17,7 +17,7 @@ print(torch.__version__)
 warnings.filterwarnings('ignore')
 
 #集成学习的算法
-from torchensemble.voting import VotingClassifier
+from torchensemble.voting import BaggingClassifier
 args = None
 
 def display_records(records, logger):
@@ -36,7 +36,7 @@ def parse_args():
     # ROBOT ./datasets/Robot_Attitude  # Printer_3D_v2  Dataset_3D
     parser.add_argument('--data_name', type=str, default='ESD', help='the name of the data') #ROBOT
     parser.add_argument('--data_dir', type=str, default='D:/czb/UDTL-master/hvcm',help='the directory of the data')  #./datasets/Robot_Attitude
-    parser.add_argument('--checkpoint_dir', type=str,default=r'./23/79/voting',help='the directory to save the model')
+    parser.add_argument('--checkpoint_dir', type=str,default=r'./23/79/bagging',help='the directory to save the model')
     ##for changing
     parser.add_argument('--model_name', type=str, choices=['cap_multiscale','cap_robot_2400','cnn_features','cnn_robot'],
                         default='cnn_features', help='the name of the model')  #for printer#  cap_multiscale  cnn_multiscale  cap_only_multiscale    #for robot# cap_robot_2400  cnn_robot
@@ -158,7 +158,7 @@ if __name__ == '__main__':
         a=trainer.setup()
 
         #voting
-        model=VotingClassifier(estimator=a.model_all, n_estimators=args.n_estimators, cuda=True)
+        model=BaggingClassifier(estimator=a.model_all, n_estimators=args.n_estimators, cuda=True)
         model.set_optimizer("Adam", lr=args.lr, weight_decay=args.weight_decay)
         model.fit(source_train=a.dataloaders['source_train'],target_train=a.dataloaders['target_train'],epochs=args.max_epoch,source_val=a.dataloaders['source_val'],
                   save_dir=save_dir,trainer=trainer,target_val=a.dataloaders['target_val'])
